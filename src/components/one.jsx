@@ -86,48 +86,50 @@ const Questionnaire = () => {
     // You can perform any further actions here after submitting the form
   };
 
-  const currentQuestion = questions[currentQuestionIndex];
-
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        {questions.slice(0, currentQuestionIndex).map((question, index) => (
+        {questions.slice(0, currentQuestionIndex + 1).map((question, index) => (
           <div key={index}>
             <label>{question.question}</label>
-            <div>Answer: {answers[index]}</div>
-          </div>
-        ))}
-
-        <div>
-          <label>{currentQuestion.question}</label>
-          {currentQuestion.type === "button" && (
-            <div>
-              {currentQuestion.options.map((option, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => handleOptionClick(option)}
-                  style={{ background: option === selectedOption ? 'lightblue' : 'none' }}
-                >
-                  {option}
-                </button>
-              ))}
+            {question.type === "button" && (
+              <div>
+                {index === currentQuestionIndex ? (
+                  question.options.map((option, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => handleOptionClick(option)}
+                      style={{ background: option === selectedOption ? 'lightblue' : 'none' }}
+                    >
+                      {option}
+                    </button>
+                  ))
+                ) : (
+                  <div>Answer: {answers[index]}</div>
+                )}
+                {index === currentQuestionIndex && (
+                  <input
+                    type="text"
+                    value={selectedOption}
+                    readOnly
+                  />
+                )}
+              </div>
+            )}
+            {question.type === "text" && (
               <input
                 type="text"
-                value={selectedOption}
-                readOnly
+                value={index === currentQuestionIndex ? selectedOption : answers[index]}
+                onChange={(e) => setSelectedOption(e.target.value)}
+                readOnly={index !== currentQuestionIndex}
               />
-            </div>
-          )}
-          {currentQuestion.type === "text" && (
-            <input
-              type="text"
-              value={selectedOption}
-              onChange={(e) => setSelectedOption(e.target.value)}
-            />
-          )}
-        </div>
-
+            )}
+            {index < currentQuestionIndex && (
+              <div>Answer: {answers[index]}</div>
+            )}
+          </div>
+        ))}
         {currentQuestionIndex < questions.length - 1 ? (
           <button type="button" onClick={handleNextQuestion}>
             Next
